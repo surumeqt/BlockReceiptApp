@@ -76,30 +76,30 @@ export default function SignUp() {
             ) : (
                 <View className="w-80 p-6 bg-white rounded-2xl shadow-md">
                     <Text className="text-1xl font-light mb-4 text-center font-monda">Don't have an Account ?</Text>
-                    <Text className="text-2xl font-bold mb-4 text-center font-monda">register</Text>
+                    <Text className="text-2xl font-bold mb-4 text-center font-monda">sign-up</Text>
                     <TextInput
                         className="border border-gray-300 rounded-md p-3 mb-2 font-monda"
                         value={fname}
-                        placeholder="Enter First Name"
+                        placeholder="First Name"
                         onChangeText={setFname}
                     />
                     <TextInput
                         className="border border-gray-300 rounded-md p-3 mb-2 font-monda"
                         value={lname}
-                        placeholder="Enter Last Name"
+                        placeholder="Last Name"
                         onChangeText={setLname}
                     />
                     <TextInput
                         className="border border-gray-300 rounded-md p-3 mb-2 font-monda"
                         value={emailAddress}
-                        placeholder="Enter Email Address"
+                        placeholder="Email Address"
                         onChangeText={setEmailAddress}
                     />
                     <View className="relative mb-4">
                         <TextInput
                             className="border border-gray-300 rounded-md p-3 font-monda"
                             value={password}
-                            placeholder="Enter Password"
+                            placeholder="Password"
                             secureTextEntry={!showPassword}
                             onChangeText={setPassword}
                         />

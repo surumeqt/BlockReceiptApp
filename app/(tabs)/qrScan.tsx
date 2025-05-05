@@ -63,7 +63,7 @@ const QRScan = () => {
         Crypto.CryptoDigestAlgorithm.SHA256,
         base64
       );
-      
+      console.log("Hash:", hash);
       // if (receipt?.ORnumber) {
       //   await registerReceipt(userId, hash, receipt.ORnumber);
       // }
