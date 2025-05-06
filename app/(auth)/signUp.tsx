@@ -81,18 +81,21 @@ export default function SignUp() {
                         className="border border-gray-300 rounded-md p-3 mb-2 font-monda"
                         value={fname}
                         placeholder="First Name"
+                        placeholderTextColor="#666666"
                         onChangeText={setFname}
                     />
                     <TextInput
                         className="border border-gray-300 rounded-md p-3 mb-2 font-monda"
                         value={lname}
                         placeholder="Last Name"
+                        placeholderTextColor="#666666"
                         onChangeText={setLname}
                     />
                     <TextInput
                         className="border border-gray-300 rounded-md p-3 mb-2 font-monda"
                         value={emailAddress}
                         placeholder="Email Address"
+                        placeholderTextColor="#666666"
                         onChangeText={setEmailAddress}
                     />
                     <View className="relative mb-4">
@@ -100,6 +103,7 @@ export default function SignUp() {
                             className="border border-gray-300 rounded-md p-3 font-monda"
                             value={password}
                             placeholder="Password"
+                            placeholderTextColor="#666666"
                             secureTextEntry={!showPassword}
                             onChangeText={setPassword}
                         />
