@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { View, TouchableOpacity, Text } from "react-native";
+import { View, TouchableOpacity, Text, Image } from "react-native";
 import { useAuth, useUser } from "@clerk/clerk-expo";
 import { TransactionModal, LogoutModal } from "@/components/ModalView";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function Profile() {
   const { signOut } = useAuth();
@@ -18,11 +19,19 @@ export default function Profile() {
   };
 
   return (
-    <View className="flex-1 bg-gray-100">
-      <View className="bg-white p-6 shadow-md rounded-b-2xl items-center">
-        <Text className="text-2xl font-bold text-gray-900 font-monda">{user?.fullName}</Text>
-        <View className="flex-row items-center space-x-2 mt-1">
-          <Text className="font-bold text-dark-900 font-monda">{user?.primaryEmailAddress?.emailAddress} ✅</Text>
+    <View className="flex-1 bg-[#004581] p-6">
+      <View className="bg-white p-12 shadow-md rounded-2xl items-center">
+        <Image 
+          source={{ uri: user?.imageUrl}}
+          className="w-24 h-24 rounded-full border-2 border-blue-500"
+          alt="Profile Picture"
+          resizeMode="cover"
+        />
+        <View className="flex-col items-center space-x-2 mt-1">
+          <Text className="text-2xl font-bold text-gray-900 font-monda">{user?.fullName}</Text>
+          <Text className="font-bold text-dark-900 font-monda">{user?.primaryEmailAddress?.emailAddress} 
+            <Ionicons name="checkmark-circle" size={20} color="#4CAF50" />
+          </Text>
         </View>
       </View>
 

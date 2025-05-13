@@ -13,7 +13,7 @@ export default function WelcomeScreen() {
       </Text>
 
       <TouchableOpacity 
-        onPress={() => router.push('/signUp')} 
+        onPress={() => router.replace('/signUp')} 
         className="mt-8 bg-[#018ADB] px-6 py-3 rounded-2xl shadow-lg active:scale-95"
       >
         <Text className="text-[#DDE8F0] text-xl font-monda font-semibold">Get Started</Text> 
