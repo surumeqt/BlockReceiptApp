@@ -78,7 +78,7 @@ const QRScan = () => {
       await uploadImage({
         base64,
         owner: userId,
-        txHash: hash, // still using content hash for DB
+        txHash: txReceipt.hash, // still using content hash for DB
         company: companyName,
       });
 

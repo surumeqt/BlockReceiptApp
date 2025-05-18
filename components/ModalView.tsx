@@ -1,28 +1,42 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, TouchableOpacity, Modal, Image } from "react-native";
-// import { ethers } from "ethers";
+import { ethers } from "ethers";
 
-// const provider = new ethers.JsonRpcProvider("http://10.0.2.2:8545");
+const provider = new ethers.JsonRpcProvider("https://sepolia.infura.io/v3/0f2b412917604f378b52068c34bb9f4d");
 
 const TransactionModal = ({ visible, onClose }: { visible: boolean; onClose: () => void}) => {
   const [txHash, setTxHash] = useState("");
   const [loading, setLoading] = useState(false);
   const [txStatus, setTxStatus] = useState<string | null>(null);
 
-  // const verifyTransaction = async () => {
-  //   setLoading(true);
-  //   try {
-  //     const receipt = await provider.getTransactionReceipt(txHash);
-  //     if (receipt) {
-  //       setTxStatus(`✅ Confirmed in Block: ${receipt.blockNumber}`);
-  //     } else {
-  //       setTxStatus("⏳ Transaction pending or not found.");
-  //     }
-  //   } catch (error) {
-  //     setTxStatus("❌ Invalid transaction hash.");
-  //   }
-  //   setLoading(false);
-  // };
+   useEffect(() => {
+    if (!visible) {
+      setTxHash("");
+      setTxStatus(null);
+      setLoading(false);
+    }
+  }, [visible]);
+
+  const verifyTransaction = async () => {
+    setLoading(true);
+    setTxStatus(null);
+
+    try {
+      const receipt = await provider.getTransactionReceipt(txHash);
+      
+      if (!receipt) {
+        setTxStatus("⏳ Transaction is still pending or not found.");
+      } else if (receipt.status === 1) {
+        setTxStatus(`✅ Transaction confirmed in block #${receipt.blockNumber}`);
+      } else {
+        setTxStatus("❌ Transaction failed.");
+      }
+    } catch (error) {
+      console.error("Verification error:", error);
+      setTxStatus("❌ Invalid transaction hash or network error.");
+    }
+    setLoading(false);
+  };
 
   return (
     <Modal visible={visible} transparent animationType="fade">
@@ -38,15 +52,15 @@ const TransactionModal = ({ visible, onClose }: { visible: boolean; onClose: () 
             autoCapitalize="none"
           />
 
-          <TouchableOpacity
-            // onPress={verifyTransaction}
-            // disabled={!txHash}
-            className={`py-3 rounded-xl items-center ${txHash ? "bg-blue-500" : "bg-gray-300"}`}
-          >
-            <Text className="text-white font-semibold text-lg">
-              {loading ? "Verifying..." : "Verify"}
-            </Text>
-          </TouchableOpacity>
+        <TouchableOpacity
+          onPress={verifyTransaction}
+          disabled={!txHash}
+          className={`py-3 rounded-xl items-center ${txHash ? "bg-blue-500" : "bg-gray-300"}`}
+        >
+          <Text className="text-white font-semibold text-lg">
+            {loading ? "Verifying..." : "Verify"}
+          </Text>
+        </TouchableOpacity>
 
           {txStatus && <Text className="mt-4 text-center text-lg">{txStatus}</Text>}
 
