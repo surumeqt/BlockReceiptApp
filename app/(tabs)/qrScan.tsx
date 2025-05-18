@@ -62,12 +62,16 @@ const QRScan = () => {
         Crypto.CryptoDigestAlgorithm.SHA256,
         base64
       );
-      console.log("Hash:", hash);
+      const formattedHash = `0x${hash}`;
 
+      if (formattedHash.length !== 66) {
+        Alert.alert("❌ Error", "Invalid hash length for blockchain.");
+        return;
+      }
+      const numericId = parseInt(receipt?.ORnumber.replace(/\D/g, ""), 10); // "3692741825"
       const companyName = receipt?.company ?? "";
-
       // 🔐 Register on blockchain using utility function
-      const txReceipt = await registerReceiptOnChain(`0x${hash}`, receiptId!);
+      const txReceipt = await registerReceiptOnChain(formattedHash, numericId!);
       console.log("Blockchain TX:", txReceipt);
 
       // ✅ Upload to Convex

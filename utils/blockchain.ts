@@ -16,8 +16,11 @@ const contract = new ethers.Contract(CONTRACT_ADDRESS, ReceiptRegistryABI, walle
  * @param receiptId ID from QR code
  * @param currency optional currency string (can be empty or hardcoded for now)
  */
-export async function registerReceiptOnChain(hash: string, receiptId: string, currency = "PHP") {
+export async function registerReceiptOnChain(hash: string, receiptId: Number, currency = "PHP") {
   try {
+        if (!ethers.isHexString(hash) || ethers.dataLength(hash) !== 32) {
+      throw new Error("Invalid hash: must be 32 bytes and hex formatted.");
+    }
     const currencyBytes32 = ethers.encodeBytes32String(currency); // Convert to bytes32
     const tx = await contract.storeReceipt(hash, receiptId, currencyBytes32);
     const receipt = await tx.wait();
