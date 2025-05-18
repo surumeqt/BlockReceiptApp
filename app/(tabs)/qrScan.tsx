@@ -20,7 +20,7 @@ const QRScan = () => {
   const receiptRef = useRef<View | null>(null);
   const [loading, setLoading] = useState(false);
   const [imageReady, setImageReady] = useState(false);
-  const receipt = useQuery(api.UserReceipts.getByReceiptId, receiptId ? { receiptId } : "skip");
+  const receipt = useQuery(api.CompanyReceipts.getByReceiptId, receiptId ? { receiptId } : "skip");
 
   useEffect(() => {
     (async () => {
@@ -33,9 +33,9 @@ const QRScan = () => {
   const handleQRCodeScanned = ({ data }: { data: string }) => {
     try {
       const parsedData = JSON.parse(data);
-      // console.log("Parsed QR Code Data:", parsedData);
+      console.log("Parsed QR Code Data:", parsedData);
       setReceiptData(parsedData.receiptId);
-      // console.log("Receipt ID:", parsedData.receiptId);
+      console.log("Receipt ID:", parsedData.receiptId);
       setScanned(true);
     } catch (error) {
       Alert.alert("❌ Error", "Invalid QR code data.");

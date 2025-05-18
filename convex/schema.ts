@@ -10,7 +10,7 @@ export default defineSchema({
     })
     .index("by_clerk_id", ["clerkId"]),
 
-    images: defineTable({
+    UserReceipts: defineTable({
         imageUrl: v.string(),
         owner: v.string(),
         company: v.string(),
@@ -20,7 +20,7 @@ export default defineSchema({
       .index("by_owner", ["owner"])
       .index("by_hash", ["txHash"]),
 
-    receipts: defineTable({
+    CompanyReceipts: defineTable({
         receiptUrl: v.string(),
         company: v.string(),
         TIN: v.string(),

@@ -9,7 +9,7 @@ export default function RootLayout() {
   return (
     <ClerkAndConvexProvider>
       <SafeAreaProvider>
-        <StatusBar style="light" backgroundColor="#000"/>
+        <StatusBar style="light"/>
         <SafeAreaAlias>
           <AuthNavigation />
         </SafeAreaAlias>
