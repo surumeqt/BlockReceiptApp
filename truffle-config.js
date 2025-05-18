@@ -66,15 +66,14 @@ module.exports = {
     // options below to some value.
     //
     sepolia: {
-      provider: () => new HDWalletProvider(MNEMONIC, `https://sepolia.infura.io/v3/47bdc0972c44430bbb3bd71f2e6e1a67`, 0, 1, { pollingInterval: 15000, timeout: 90000 }), // Increased timeout to 90 seconds and polling interval to 15 seconds
-      network_id: 11155111,
-      gas: 5500000,
-      confirmations: 2,
-      timeoutBlocks: 200,
-      skipDryRun: true,
-      networkCheckTimeout: 90000
-
-    },
+  provider: () => new HDWalletProvider(MNEMONIC, `https://eth-sepolia.g.alchemy.com/v2/WUcxV3-OJ9w_4idVmy5w5X1xQdgfA5ox`, 0, 1, { pollingInterval: 15000, timeout: 90000 }),
+  network_id: 11155111,
+  gas: 5500000,
+  confirmations: 2,
+  timeoutBlocks: 1000, // Increased timeoutBlocks
+  skipDryRun: true,
+  networkCheckTimeout: 90000
+},
     MARICH: {
       host: "127.0.0.1",     // Localhost (default: none)
       port: 8545,            // Standard Ethereum port (default: none)
