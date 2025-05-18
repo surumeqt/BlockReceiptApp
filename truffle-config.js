@@ -40,12 +40,19 @@
  *
  * https://trufflesuite.com/docs/truffle/getting-started/using-the-truffle-dashboard/
  */
-
 require('dotenv').config();
+ console.log('DEBUG: Private Key (defined?):', !!process.env.PRIVATE_KEY);
+console.log('DEBUG: Alchemy URL (defined?):', !!process.env.ALCHEMY_SEPOLIA_URL);
+if (process.env.PRIVATE_KEY) {
+    console.log('DEBUG: Private Key length:', process.env.PRIVATE_KEY.length);
+    console.log('DEBUG: Private Key starts with 0x:', process.env.PRIVATE_KEY.startsWith('0x'));
+}
 // const { MNEMONIC, PROJECT_ID } = process.env;
 const HDWalletProvider = require('@truffle/hdwallet-provider');
 const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
 const MNEMONIC = process.env.MNEMONIC;
+const PRIVATE_KEY = process.env.PRIVATE_KEY;
+const ALCHEMY_SEPOLIA_URL = process.env.ALCHEMY_SEPOLIA_URL;
 
 module.exports = {
   /**
@@ -66,19 +73,34 @@ module.exports = {
     // options below to some value.
     //
     sepolia: {
-  provider: () => new HDWalletProvider(MNEMONIC, `https://eth-sepolia.g.alchemy.com/v2/WUcxV3-OJ9w_4idVmy5w5X1xQdgfA5ox`, 0, 1, { pollingInterval: 15000, timeout: 90000 }),
-  network_id: 11155111,
-  gas: 5500000,
-  confirmations: 2,
-  timeoutBlocks: 1000, // Increased timeoutBlocks
-  skipDryRun: true,
-  networkCheckTimeout: 90000
-},
+      provider: () => {
+        // Assign the environment variables to local constants for clarity
+        const privateKey = process.env.PRIVATE_KEY;
+        const alchemySepoliaUrl = process.env.ALCHEMY_SEPOLIA_URL;
+
+        // Add a check to ensure they are not undefined before passing
+        if (!privateKey || !alchemySepoliaUrl) {
+          throw new Error("Missing PRIVATE_KEY or ALCHEMY_SEPOLIA_URL in .env file.");
+        }
+
+        return new HDWalletProvider(
+          [privateKey], // Array of private keys
+          alchemySepoliaUrl // RPC URL
+        );
+      },
+      network_id: 11155777,
+      gas: 8000000,
+      gasPrice: 20000000000,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true
+    },
     MARICH: {
-      host: "127.0.0.1",     // Localhost (default: none)
-      port: 8545,            // Standard Ethereum port (default: none)
-      network_id: 5777 // Or "*",       // Any network (default: none)
-     },
+      host: "127.0.0.1",
+      port: 8545,
+      network_id: 5777
+    },
+  
     //
     // An additional network, but with some advanced options…
     // advanced: {
