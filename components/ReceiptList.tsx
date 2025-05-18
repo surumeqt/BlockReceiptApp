@@ -42,7 +42,7 @@ const ReceiptList = ({ userId }: { userId: string }) => {
           numColumns={2}
           keyExtractor={(item) => item._id}
           renderItem={({ item }) => (
-            <View className="bg-[#DDE8F0] w-[45%] m-2 p-3 rounded-lg items-center space-y-4">
+            <View className="bg-[#DDE8F0] w-[45%] m-2 p-3 rounded-lg items-center space-y-4 space-x-10">
               {item.imageUrl ? (
                   <TouchableOpacity
                   onPress={() => {
