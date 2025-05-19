@@ -9,7 +9,6 @@ const palette = {
 };
 
 export default function TabLayout() {
-
   return (
     <Tabs
       screenOptions={{
@@ -35,7 +34,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="qrScan"
         options={{
-          tabBarIcon: ({color}) => (
+          tabBarLabel: 'Scan',
+          tabBarIcon: ({ color }) => (
             <View style={[styles.circleButton, { backgroundColor: palette.background }]}>
               <Ionicons name="qr-code" color={color} size={40} />
             </View>
@@ -55,11 +55,6 @@ export default function TabLayout() {
 }
 
 const styles = StyleSheet.create({
-  circleButtonContainer: {
-    position: 'absolute',
-    alignSelf: 'center',
-    bottom: 50,
-  },
   circleButton: {
     width: 150,
     height: 100,
