@@ -12,7 +12,7 @@ import { registerReceiptOnChain } from "@/utils/blockchain";
 
 const QRScan = () => {
   const { user } = useUser();
-  const userId = user?.fullName ?? "";
+  const userId = user?.id ?? "";
   const [scanned, setScanned] = useState(false);
   const [receiptId, setReceiptData] = useState<string | null>(null);
   const [permission, requestPermission] = useCameraPermissions();

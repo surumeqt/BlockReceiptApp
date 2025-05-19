@@ -11,8 +11,14 @@ const ReceiptList = ({ userId }: { userId: string }) => {
   const [imageModalVisible, setImageModalVisible] = useState(false);
   const [selectedImageUrl, setSelectedImageUrl] = useState<string | null>(null);
 
-  if (!receipts) return <Text className="text-white">Loading...</Text>;
-  if (receipts.length === 0) return <Text className="text-white">No scanned receipts yet.</Text>;
+  if (receipts === undefined) {
+    console.log("⌛ [ReceiptList] Still loading receipts...");
+    return <Text className="text-white">Loading...</Text>;
+  }
+
+  if (receipts.length === 0) {
+    return <Text className="text-white">No scanned receipts yet.</Text>;
+  }
 
   const groupedReceipts: { [company: string]: typeof receipts } = {};
   receipts.forEach((receipt) => {
@@ -29,11 +35,6 @@ const ReceiptList = ({ userId }: { userId: string }) => {
           onPress={() => setSelectedCompany(null)}
           className="bg-[#004581] p-2 rounded-lg w-24 mb-4"
         >
-          {/* <Image 
-            source={backIcon}
-            style={{ width: 20, height: 20, marginRight: 8 }}
-            resizeMode="contain"
-          /> */}
           <Text className="text-white text-lg">⬅ Back</Text>
         </TouchableOpacity>
 
@@ -42,19 +43,23 @@ const ReceiptList = ({ userId }: { userId: string }) => {
           numColumns={2}
           keyExtractor={(item) => item._id}
           renderItem={({ item }) => (
-            <View className="bg-[#DDE8F0] w-[45%] m-2 p-3 rounded-lg items-center space-y-4 space-x-10">
+            <View className="bg-[#DDE8F0] w-[45%] m-2 p-3 rounded-lg items-center space-y-4">
               {item.imageUrl ? (
-                  <TouchableOpacity
+                <TouchableOpacity
                   onPress={() => {
                     setSelectedImageUrl(item.imageUrl);
                     setImageModalVisible(true);
                   }}
                 >
-                  <Image source={{ uri: item.imageUrl }} style={{ width: 130, height: 170, borderRadius: 8 }} />
+                  <Image
+                    source={{ uri: item.imageUrl }}
+                    style={{ width: 130, height: 170, borderRadius: 8 }}
+                  />
                 </TouchableOpacity>
               ) : (
                 <Text className="text-gray-600 text-center mt-2">Image not available</Text>
               )}
+
               <TouchableOpacity
                 onPress={() =>
                   Alert.alert(
@@ -79,11 +84,12 @@ const ReceiptList = ({ userId }: { userId: string }) => {
             </View>
           )}
         />
-            <ImageModal
-            visible={imageModalVisible}
-            onClose={() => setImageModalVisible(false)}
-            imageUrl={selectedImageUrl}
-            />
+
+        <ImageModal
+          visible={imageModalVisible}
+          onClose={() => setImageModalVisible(false)}
+          imageUrl={selectedImageUrl}
+        />
       </View>
     );
   }

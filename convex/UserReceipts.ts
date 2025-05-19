@@ -25,10 +25,13 @@ export const upload = mutation({
 export const getByUser = query({
   args: { owner: v.string() },
   handler: async (ctx, { owner }) => {
-    return await ctx.db
+
+    const results = await ctx.db
       .query("UserReceipts")
       .withIndex("by_owner", (q) => q.eq("owner", owner))
       .order("desc")
       .collect();
+
+    return results;
   },
 });
