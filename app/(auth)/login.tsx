@@ -17,15 +17,22 @@ import React, { useState } from "react";
 export default function Login() {
   const { signIn, setActive, isLoaded } = useSignIn();
   const router = useRouter();
-
   const [emailAddress, setEmailAddress] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  const getClerkErrorMessage = (err: any) => {
+    if (err?.errors && err.errors.length > 0) {
+      const { message, meta } = err.errors[0];
+      const field = meta?.paramName ? meta.paramName.replace(/_/g, ' ') : null;
+      return field ? `${field.charAt(0).toUpperCase() + field.slice(1)} ${message}` : message;
+    }
+    return "Something went wrong. Please try again.";
+  };
+
   const onSignInPress = async () => {
     if (!isLoaded || loading) return;
-
     setLoading(true);
 
     try {
@@ -37,15 +44,10 @@ export default function Login() {
       if (signInAttempt.status === "complete") {
         await setActive({ session: signInAttempt.createdSessionId });
         router.replace("/(tabs)/home");
-      } else {
-        console.error(
-          "⚠️ Additional steps required:",
-          JSON.stringify(signInAttempt, null, 2)
-        );
       }
-    } catch (err) {
-      console.error("❌ Login error:", err);
-      Alert.alert("Error", "Failed to log in.");
+    } catch (err : any) {
+      const errorMsg = getClerkErrorMessage(err);
+      Alert.alert("Login Error", errorMsg);
     } finally {
       setLoading(false);
     }
@@ -64,7 +66,7 @@ export default function Login() {
       >
         <View className="items-center justify-center mb-8">
           <Text className="text-4xl text-[#DDE8F0] font-monda font-bold">
-            Block Receipt
+            Abans's General Upholstery
           </Text>
           <Text className="text-lg text-[#DDE8F0] mt-2 text-center font-monda">
             Digitalized Your Receipt.

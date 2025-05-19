@@ -71,6 +71,7 @@ const ReceiptPreview = () => {
         company: receipt?.company ?? "",
       });
 
+
       Alert.alert(
         "✅ Receipt Saved & Registered!",
         `Transaction Hash: ${txReceipt.hash}`,
@@ -81,9 +82,16 @@ const ReceiptPreview = () => {
           },
         ]
       );
-    } catch (error) {
-      console.error("❌ Error saving and registering receipt:", error);
-      Alert.alert("Error", "Failed to save and register receipt.");
+    } catch (error: any) {
+        const msg =
+          error?.reason === "Receipt already recorded" ||
+          error?.message?.includes("Receipt already recorded")
+            ? "This receipt is already registered on the blockchain."
+            : error?.revert?.args?.[0] ||
+              error?.response?.data?.message ||
+              "Failed to save and register receipt.";
+
+        Alert.alert("❌ Error Saving", msg);
     } finally {
       setLoading(false);
     }

@@ -26,6 +26,17 @@ export default function SignUp() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  const getClerkErrorMessage = (err: any) => {
+    if (err?.errors && err.errors.length > 0) {
+      const { message, meta } = err.errors[0];
+      const field = meta?.paramName ? meta.paramName.replace(/_/g, ' ') : null;
+
+      return field ? `${field.charAt(0).toUpperCase() + field.slice(1)} ${message}` : message;
+    }
+
+    return "Something went wrong. Please try again.";
+  };
+
   const onSignUpPress = async () => {
     if (!isLoaded) return;
 
@@ -36,34 +47,35 @@ export default function SignUp() {
         firstName: fname,
         lastName: lname,
       });
+
       await signUp.prepareEmailAddressVerification({
         strategy: "email_code",
       });
 
       setPendingVerification(true);
-    } catch (err) {
-      console.error("Sign-up error:", JSON.stringify(err, null, 2));
-      Alert.alert("Error", "Sign-up failed. Try again.");
+    } catch (err: any) {
+      const errorMsg = getClerkErrorMessage(err);
+      Alert.alert("Sign-Up Error", errorMsg);
     }
   };
 
   const onVerifyPress = async () => {
     if (!isLoaded || loading) return;
+
     setLoading(true);
     try {
-      const signUpAttempt = await signUp.attemptEmailAddressVerification({
-        code,
-      });
+      const signUpAttempt = await signUp.attemptEmailAddressVerification({ code });
 
       if (signUpAttempt.status === "complete") {
         await setActive({ session: signUpAttempt.createdSessionId });
         router.replace("/(tabs)/home");
       } else {
-        console.error(JSON.stringify(signUpAttempt, null, 2));
-        setLoading(false);
+        Alert.alert("Verification Incomplete", "Please enter the correct code.");
       }
-    } catch (err) {
-      Alert.alert("Error", "Verification Failed");
+    } catch (err: any) {
+      const errorMsg = getClerkErrorMessage(err);
+      Alert.alert("Sign-Up Error", errorMsg);
+    } finally {
       setLoading(false);
     }
   };
@@ -83,7 +95,9 @@ export default function SignUp() {
         keyboardShouldPersistTaps="handled"
       >
         <View className="items-center justify-center mb-8">
-            <Text className="text-4xl text-[#DDE8F0] font-monda font-bold">Block Receipt</Text>
+            <Text className="text-4xl text-[#DDE8F0] font-monda font-bold">
+              Abans's General Upholstery
+              </Text>
             <Text className="text-lg text-[#DDE8F0] mt-2 text-center font-monda">
                 Digitalized Your Receipt.
             </Text>

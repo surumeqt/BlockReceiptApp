@@ -35,3 +35,15 @@ export const getByUser = query({
     return results;
   },
 });
+
+export const getByHash = query({
+  args: { txHash: v.string() },
+  handler: async (ctx, { txHash }) => {
+    const result = await ctx.db
+      .query("UserReceipts")
+      .withIndex("by_hash", (q) => q.eq("txHash", txHash))
+      .first();
+
+    return result;
+  },
+});
