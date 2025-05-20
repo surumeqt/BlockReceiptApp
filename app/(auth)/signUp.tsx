@@ -95,9 +95,9 @@ export default function SignUp() {
         keyboardShouldPersistTaps="handled"
       >
         <View className="items-center justify-center mb-8">
-            <Text className="text-4xl text-[#DDE8F0] font-monda font-bold">
-              Abans's General Upholstery
-              </Text>
+          <Text className="text-2xl text-[#DDE8F0] font-monda font-bold text-center">
+            Abans's General Upholstery
+          </Text>
             <Text className="text-lg text-[#DDE8F0] mt-2 text-center font-monda">
                 Digitalized Your Receipt.
             </Text>
