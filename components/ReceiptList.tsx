@@ -30,7 +30,7 @@ const ReceiptList = ({ userId }: { userId: string }) => {
 
   if (selectedCompany !== null) {
     return (
-      <View className="mt-4">
+      <View className="mt-1 flex-1">
         <TouchableOpacity
           onPress={() => setSelectedCompany(null)}
           className="bg-[#004581] p-2 rounded-lg w-24 mb-4"
@@ -95,7 +95,7 @@ const ReceiptList = ({ userId }: { userId: string }) => {
   }
 
   return (
-    <ScrollView className="space-y-4">
+    <ScrollView className="flex-1 space-y-4">
       {Object.keys(groupedReceipts).map((company) => (
         <TouchableOpacity
           key={company}

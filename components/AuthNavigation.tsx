@@ -21,7 +21,7 @@ export default function AuthNavigation() {
   
     if (!isLoaded) {
       return (
-        <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#004581" }}>
           <ActivityIndicator size="large" color="#000" />
         </View>
       );

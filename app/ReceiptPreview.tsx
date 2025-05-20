@@ -55,7 +55,6 @@ const ReceiptPreview = () => {
         Alert.alert("❌ Error", "Invalid hash length for blockchain.");
         return;
       }
-
       const numericId = parseInt(receipt?.ORnumber?.replace(/\D/g, ""), 10);
       if (isNaN(numericId)) {
         Alert.alert("❌ Error", "Invalid OR Number");
@@ -67,10 +66,10 @@ const ReceiptPreview = () => {
       await uploadImage({
         base64,
         owner: userId,
+        rawHash: formattedHash,
         txHash: txReceipt.hash,
         company: receipt?.company ?? "",
       });
-
 
       Alert.alert(
         "✅ Receipt Saved & Registered!",

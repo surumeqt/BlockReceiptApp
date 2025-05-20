@@ -14,11 +14,12 @@ export default defineSchema({
         imageUrl: v.string(),
         owner: v.string(),
         company: v.string(),
+        rawHash: v.string(),
         txHash: v.string(),
         timestamp: v.float64(),
       })
       .index("by_owner", ["owner"])
-      .index("by_hash", ["txHash"]),
+      .index("by_hash", ["rawHash"]),
 
     CompanyReceipts: defineTable({
         receiptUrl: v.string(),

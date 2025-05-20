@@ -26,6 +26,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="home"
         options={{
+          tabBarLabel: 'Home',
           tabBarIcon: ({ color }) => (
             <Ionicons name="home" color={color} size={30} />
           ),
@@ -45,6 +46,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="profile"
         options={{
+          tabBarLabel: 'Profile',
           tabBarIcon: ({ color }) => (
             <Ionicons name="person" color={color} size={30} />
           ),
