@@ -1,4 +1,4 @@
-# Welcome to your Expo app 👋
+# Welcome to BlockReceipt: Abans General Upholstery Blockchain-Based Receipt
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
@@ -23,7 +23,6 @@ In the output, you'll find options to open the app in a
 - [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
 - [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
 ## Get a fresh project
 
@@ -35,12 +34,46 @@ npm run reset-project
 
 This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
 
-## Learn more
+## Build Your Apk **note: you must have an expo account**
 
-To learn more about developing your project with Expo, look at the following resources:
+1. Install the latest EAS CLI
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+
+npm install -g eas-cli
+
+```
+
+2. Log in to your Expo account
+
+```bash
+
+eas build:configure
+
+```
+
+After configuration, it will generate eas.json. from there, add this for production.
+
+```bash
+
+    "production": {
+      "autoIncrement": true,
+      "android": {
+        "buildType": "apk"
+      }
+   }
+
+````
+
+3. Generate the APK build for production
+
+```bash
+
+eas build -p android --profile production
+
+```
+
+reference - [EAS BUILD](https://docs.expo.dev/build/setup/)
 
 ## Join the community
 
