@@ -2,9 +2,9 @@ import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 
 export const upload = mutation({
-  args: { base64: v.string(), owner: v.string(), company: v.string(), txHash: v.string(), rawHash: v.string() },
+  args: { base64: v.string(), owner: v.string(), company: v.string(), txHash: v.string(), OrNumber: v.string() },
   handler: async (ctx, args) => {
-    const existingReceipt = await ctx.db.query("UserReceipts").withIndex("by_hash", (q) => q.eq("rawHash", args.txHash)).first();
+    const existingReceipt = await ctx.db.query("UserReceipts").withIndex("by_userOr", (q) => q.eq("OrNumber", args.txHash)).first();
 
     if (existingReceipt) {
       throw new Error("Receipt already exists!");
@@ -14,7 +14,7 @@ export const upload = mutation({
       imageUrl: `data:image/png;base64,${args.base64}`,
       owner: args.owner,
       company: args.company,
-      rawHash: args.rawHash,
+      OrNumber: args.OrNumber,
       txHash: args.txHash,
       timestamp: Date.now(),
     });
@@ -37,12 +37,12 @@ export const getByUser = query({
   },
 });
 
-export const getByHash = query({
-  args: { rawHash: v.string() },
-  handler: async (ctx, { rawHash }) => {
+export const getByOrNumber = query({
+  args: { ORnumber: v.string() },
+  handler: async (ctx, { ORnumber }) => {
     const result = await ctx.db
       .query("UserReceipts")
-      .withIndex("by_hash", (q) => q.eq("rawHash", rawHash))
+      .withIndex("by_userOr", (q) => q.eq("OrNumber", ORnumber))
       .first();
 
     return result;

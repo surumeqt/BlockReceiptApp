@@ -26,6 +26,7 @@ const ReceiptPreview = () => {
   );
   const uploadImage = useMutation(api.UserReceipts.upload);
   const router = useRouter();
+  const duplicateReceipt = useQuery(api.UserReceipts.getByOrNumber, receiptId ? { ORnumber: receiptId } : "skip");
 
   const receiptRef = useRef<View | null>(null);
   const [loading, setLoading] = useState(false);
@@ -61,12 +62,20 @@ const ReceiptPreview = () => {
         return;
       }
 
+      if (duplicateReceipt) {
+        Alert.alert(
+          "❌ Receipt Already Registered",
+          "This receipt has already been registered."
+        );
+        return;
+      }
+
       const txReceipt = await registerReceiptOnChain(formattedHash, numericId);
 
       await uploadImage({
         base64,
         owner: userId,
-        rawHash: formattedHash,
+        OrNumber: receiptId,
         txHash: txReceipt.hash,
         company: receipt?.company ?? "",
       });
