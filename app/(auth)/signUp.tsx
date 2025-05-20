@@ -158,9 +158,7 @@ export default function SignUp() {
             />
             <View className="relative mb-4">
               <TextInput
-                className={`border border-gray-300 rounded-md p-3 ${
-                  showPassword ? "font-monda" : ""
-                }`}
+                className="border border-gray-300 rounded-md p-3 pr-12 text-gray-900"
                 value={password}
                 placeholder="Password"
                 placeholderTextColor="#666666"

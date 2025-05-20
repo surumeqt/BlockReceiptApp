@@ -82,7 +82,7 @@ export default function Login() {
           </Text>
 
           <TextInput
-            className="border border-gray-300 rounded-md p-3 mb-2"
+            className="border border-gray-300 rounded-md p-3 mb-2 text-gray-900"
             autoCapitalize="none"
             value={emailAddress}
             placeholder="Enter email"
@@ -92,7 +92,8 @@ export default function Login() {
 
           <View className="relative mb-4">
             <TextInput
-              className="border border-gray-300 rounded-md p-3 pr-12"
+              className="border border-gray-300 rounded-md p-3 pr-12 text-gray-900"
+              autoCapitalize="none"
               value={password}
               placeholder="Enter password"
               placeholderTextColor="#666666"
