@@ -4,6 +4,7 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import * as Clipboard from "expo-clipboard";
 import { ImageModal } from "@/components/ModalView";
+import AntDesign from '@expo/vector-icons/AntDesign';
 
 const ReceiptList = ({ userId }: { userId: string }) => {
   const receipts = useQuery(api.UserReceipts.getByUser, { owner: userId });
@@ -31,11 +32,13 @@ const ReceiptList = ({ userId }: { userId: string }) => {
   if (selectedCompany !== null) {
     return (
       <View className="mt-1 flex-1">
+        <Text className="text-2xl font-bold text-[#DDE8F0]">{selectedCompany}</Text>
         <TouchableOpacity
           onPress={() => setSelectedCompany(null)}
-          className="bg-[#004581] p-2 rounded-lg w-24 mb-4"
+          className="p-2 mb-1 mt-4 flex-row items-center gap-2"
         >
-          <Text className="text-white text-lg">⬅ Back</Text>
+        <AntDesign name="leftcircle" size={24} color="white" />
+        <Text className="text-white text-lg">Back</Text>
         </TouchableOpacity>
 
         <FlatList
@@ -43,7 +46,9 @@ const ReceiptList = ({ userId }: { userId: string }) => {
           numColumns={2}
           keyExtractor={(item) => item._id}
           renderItem={({ item }) => (
-            <View className="bg-[#DDE8F0] w-[45%] m-2 p-3 rounded-lg items-center space-y-4">
+            <View className="p-2 rounded-lg items-center"
+            style={{ width: 160, height: 210}}
+            >
               {item.imageUrl ? (
                 <TouchableOpacity
                   onPress={() => {
@@ -77,7 +82,7 @@ const ReceiptList = ({ userId }: { userId: string }) => {
                     ]
                   )
                 }
-                className="bg-[#004581] mt-3 py-2 px-4 rounded-lg w-full"
+                className="mt-3 py-2 px-4 rounded-lg w-full"
               >
                 <Text className="text-white text-center font-semibold text-sm">🔗 View Tx</Text>
               </TouchableOpacity>

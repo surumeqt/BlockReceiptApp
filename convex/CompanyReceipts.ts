@@ -20,6 +20,8 @@ export const saveReceipt = mutation({
     ORnumber: v.string(),
     companyAddress: v.string(),
     date: v.string(),
+    amount: v.number(),
+    category: v.string(),
   },
   handler: async (ctx, args) => {
     await ctx.db.insert('CompanyReceipts', {
@@ -29,6 +31,8 @@ export const saveReceipt = mutation({
       ORnumber: args.ORnumber,
       companyAddress: args.companyAddress,
       date: args.date,
+      amount: args.amount,
+      category: args.category,
     });
   },
 });

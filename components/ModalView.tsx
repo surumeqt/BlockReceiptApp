@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, TouchableOpacity, Modal, Image, ActivityIndicator } from "react-native";
+import { api } from "@/convex/_generated/api";
+import { useUser } from "@clerk/clerk-expo";
+import { useQuery } from "convex/react";
 import { ethers } from "ethers";
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, Image, Modal, Text, TextInput, TouchableOpacity, View, Alert} from "react-native";
+
 
 const provider = new ethers.JsonRpcProvider("https://sepolia.infura.io/v3/0f2b412917604f378b52068c34bb9f4d");
 
@@ -44,7 +48,9 @@ const TransactionModal = ({ visible, onClose }: { visible: boolean; onClose: () 
       visible={visible}
       onRequestClose={onClose}
     >
-      <View className="flex-1 justify-center items-center bg-black/50">
+      <View className="flex-1 justify-center items-center"
+        style={{ backgroundColor: 'rgba(0,0,0,0.8)' }}
+        >
         <View className="w-80 bg-white p-6 rounded-2xl shadow-md">
           <Text className="text-xl font-bold text-[#333333] mb-4 text-center">
             Verify Transaction
@@ -64,9 +70,10 @@ const TransactionModal = ({ visible, onClose }: { visible: boolean; onClose: () 
             <TouchableOpacity
               onPress={verifyTransaction}
               disabled={loading}
-              className={`py-3 rounded-xl items-center mb-4 ${
-                loading ? "bg-gray-400" : "bg-[#018ADB]"
+              className={`py-3 items-center mb-2 ${
+                loading ? "bg-[#018ADB]" : "bg-[#018ADB]"
               }`}
+              style={{ borderRadius: 15 }}
             >
               <Text className="text-white font-semibold text-lg">
                 {loading ? (
@@ -78,9 +85,17 @@ const TransactionModal = ({ visible, onClose }: { visible: boolean; onClose: () 
             </TouchableOpacity>
           )}
 
-          {txStatus && (
+          <TouchableOpacity
+            onPress={onClose}
+            className="py-3 px-4 rounded-2xl"
+            style={{ backgroundColor: '#ff0000' }}
+          >
+            <Text className="text-white font-semibold text-lg text-center">Close</Text>
+          </TouchableOpacity>
+
+          {txStatus && txHash.length > 0 && (
             <Text
-              className={`mt-2 text-center text-base ${
+              className={`mt-6 text-center text-base ${
                 txStatus.startsWith("✅")
                   ? "text-[#28A745]"
                   : txStatus.startsWith("❌")
@@ -92,13 +107,6 @@ const TransactionModal = ({ visible, onClose }: { visible: boolean; onClose: () 
             </Text>
           )}
 
-          <TouchableOpacity
-            onPress={onClose}
-            className={`mt-4 items-center ${loading ? 'opacity-50' : ''}`}
-            disabled={loading}
-          >
-            <Text className="text-[#DC3545] font-semibold text-lg">Close</Text>
-          </TouchableOpacity>
         </View>
       </View>
     </Modal>
@@ -114,7 +122,8 @@ const LogoutModal = ({ visible, onClose, handleLogout }: { visible: boolean; onC
   }
   return (
     <Modal visible={visible} transparent animationType="fade">
-      <View className="flex-1 justify-center items-center bg-black/50">
+      <View className="flex-1 justify-center items-center"
+        style={{ backgroundColor: 'rgba(0,0,0,0.8)' }}>
         <View className="w-80 bg-white p-6 rounded-2xl shadow-md">
           <Text className="text-xl font-bold text-[#333333] mb-4 text-center font-monda">
             Confirm Logout
@@ -136,7 +145,7 @@ const LogoutModal = ({ visible, onClose, handleLogout }: { visible: boolean; onC
 
             <TouchableOpacity
               onPress={handleLogoutClick}
-              className={`py-3 px-6 rounded-xl flex-1 items-center mx-2 ${
+              className={`py-3 px-6 rounded-2xl flex-1 items-center mx-2 ${
                 loading ? 'bg-red-400' : 'bg-[#DC3545]'
               }`}
               disabled={loading}
@@ -189,5 +198,134 @@ const ImageModal = ({
   );
 };
 
-export { TransactionModal, LogoutModal, ImageModal };
+const AnalyticsModal = ({ visible, onClose }: { visible: boolean; onClose: () => void }) => {
+  const { user } = useUser();
+  const currentUserId = user?.id || "";
+
+  const analytics = useQuery(api.UserReceipts.getAnalytics, { owner: currentUserId });
+
+  const isLoading = analytics === undefined;
+
+  return (
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+      <View className="flex-1 justify-center items-center" style={{ backgroundColor: 'rgba(0,0,0,0.8)' }}>
+        <View className="w-11/12 max-w-sm bg-white p-6 rounded-2xl shadow-xl justify-between items-center">
+          <View className="items-center mb-4 mt-8">
+            <Text className="text-2xl font-bold text-[#333333] text-center font-monda">Analytics</Text>
+            <Text>---------------------------------------------------------</Text>
+          </View>
+
+          <View className="justify-center items-center mb-4">
+            {isLoading ? (
+              <ActivityIndicator size="large" color="#0000ff" />
+            ) : (
+              <Text className="text-lg text-[#333333] text-left font-monda italic"
+              numberOfLines={6}
+              ellipsizeMode="tail"
+              >
+                Total Number of Receipts: <Text className="font-bold underline">{analytics.totalReceipts}</Text> {'\n'}
+                Total Amount Spent: <Text className="font-bold underline">₱ {analytics.totalSpent.toFixed(2)}</Text> {'\n'}
+                Average Amount per Receipt: <Text className="font-bold underline">₱ {analytics.averageAmount.toFixed(2)}</Text> {'\n'}
+                Most Common Category: <Text className="font-bold underline">{analytics.mostCommonCategory}</Text> {'\n'}
+                Most Common Merchant: {'\n'} <Text className="font-bold underline">{analytics.mostCommonMerchant}</Text>
+              </Text>
+            )}
+          </View>
+
+          <Text>---------------------------------------------------------</Text>
+
+          <TouchableOpacity
+            onPress={onClose}
+            className="py-3 px-4 rounded-2xl"
+            style={{ backgroundColor: '#ff0000', width: 100, marginTop: 20, height: 50 }}
+          >
+            <Text className="text-white font-semibold text-lg text-center">Close</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+};
+
+const ResetPasswordModal = ({ visible, onClose }: { visible: boolean; onClose: () => void }) => {
+  const { user } = useUser()
+
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const updatePassword = async () => {
+    if (!user) return
+
+    setLoading(true)
+    try {
+      await user.updatePassword({
+        currentPassword,
+        newPassword,
+      })
+      Alert.alert('Success', 'Password updated successfully.')
+      setError('')
+      setCurrentPassword('')
+      setNewPassword('')
+      onClose()
+    } catch (err: any) {
+      console.error(err)
+      setError(err.errors?.[0]?.longMessage || 'Password update failed.')
+    }
+    setLoading(false)
+  }
+
+  return (
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+      <View className="flex-1 justify-center items-center" style={{ backgroundColor: 'rgba(0,0,0,0.8)' }}>
+        <View className="w-80 bg-white p-6 rounded-2xl shadow-xl">
+          <Text className="text-2xl font-bold text-[#333333] text-center mb-4">
+            Change Password
+          </Text>
+
+          <TextInput
+            className="p-3 border border-[#CCCCCC] rounded-lg mb-2 text-[#333333]"
+            placeholder="Current password"
+            placeholderTextColor="#999999"
+            value={currentPassword}
+            onChangeText={setCurrentPassword}
+          />
+          <TextInput
+            className="p-3 border border-[#CCCCCC] rounded-lg mb-2 text-[#333333]"
+            placeholder="New password"
+            placeholderTextColor="#999999"
+            value={newPassword}
+            onChangeText={setNewPassword}
+          />
+
+          <TouchableOpacity
+            onPress={updatePassword}
+            disabled={loading}
+            className="py-3 px-4 rounded-2xl mt-4"
+            style={{ backgroundColor: loading ? '#ccc' : '#018ADB' }}
+          >
+            <Text className="text-white font-semibold text-lg text-center">
+              {loading ? 'Updating...' : 'Update Password'}
+            </Text>
+          </TouchableOpacity>
+
+          {error && (
+            <Text className="text-red-600 text-center mt-4 font-semibold">{error}</Text>
+          )}
+
+          <TouchableOpacity
+            onPress={onClose}
+            className="py-3 px-4 rounded-2xl"
+            style={{ backgroundColor: '#ff0000', marginTop: 10 }}
+          >
+            <Text className="text-white font-semibold text-lg text-center">Close</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+};
+
+export { AnalyticsModal, ImageModal, LogoutModal, ResetPasswordModal, TransactionModal };
 

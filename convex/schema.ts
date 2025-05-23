@@ -17,6 +17,8 @@ export default defineSchema({
         OrNumber: v.string(),
         txHash: v.string(),
         timestamp: v.float64(),
+        amount: v.number(),
+        category: v.string(),
       })
       .index("by_owner", ["owner"])
       .index("by_userOr", ["OrNumber"]),
@@ -28,5 +30,7 @@ export default defineSchema({
         ORnumber: v.string(),
         companyAddress: v.string(),
         date: v.string(),
+        amount: v.number(),
+        category: v.string(),
       }).index("by_ORnumber", ["ORnumber"]),
 });

@@ -26,8 +26,6 @@ const ReceiptPreview = () => {
   );
   const uploadImage = useMutation(api.UserReceipts.upload);
   const router = useRouter();
-  const duplicateReceipt = useQuery(api.UserReceipts.getByOrNumber, receiptId ? { ORnumber: receiptId } : "skip");
-
   const receiptRef = useRef<View | null>(null);
   const [loading, setLoading] = useState(false);
   const [imageReady, setImageReady] = useState(false);
@@ -62,14 +60,6 @@ const ReceiptPreview = () => {
         return;
       }
 
-      if (duplicateReceipt) {
-        Alert.alert(
-          "❌ Receipt Already Registered",
-          "This receipt has already been registered."
-        );
-        return;
-      }
-
       const txReceipt = await registerReceiptOnChain(formattedHash, numericId);
 
       await uploadImage({
@@ -78,6 +68,8 @@ const ReceiptPreview = () => {
         OrNumber: receiptId,
         txHash: txReceipt.hash,
         company: receipt?.company ?? "",
+        amount: receipt?.amount ?? 0,
+        category: receipt?.category ?? "",  
       });
 
       Alert.alert(
@@ -107,14 +99,15 @@ const ReceiptPreview = () => {
 
   if (!receipt) {
     return (
-      <View className="flex-1 justify-center items-center">
-        <ActivityIndicator />
+      <View className="flex-1 justify-center items-center bg-[#004581]">
+        <ActivityIndicator size="large" color="#000" />
       </View>
     );
   }
 
   return (
-    <View className="flex-1 items-center justify-center p-4">
+    <View className="flex-1 items-center justify-center p-4 bg-[#004581]">
+      <Text className="text-2xl mb-6 font-bold text-[#DDE8F0]">{receipt.company}</Text>
       <View
         ref={receiptRef}
         collapsable={true}

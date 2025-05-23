@@ -1,14 +1,16 @@
-import { useState } from "react";
-import { View, TouchableOpacity, Text, Image, Alert } from "react-native";
+import { AnalyticsModal, LogoutModal, ResetPasswordModal, TransactionModal } from "@/components/ModalView";
 import { useAuth, useUser } from "@clerk/clerk-expo";
-import { TransactionModal, LogoutModal } from "@/components/ModalView";
 import { Ionicons } from "@expo/vector-icons";
+import { useState } from "react";
+import { Alert, Image, Text, TouchableOpacity, View } from "react-native";
 
 export default function Profile() {
   const { signOut } = useAuth();
   const { user } = useUser();
   const [txModalVisible, setTxModalVisible] = useState(false);
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
+  const [analyticsModalVisible, setAnalyticsModalVisible] = useState(false);
+  const [resetPasswordModalVisible, setResetPasswordModalVisible] = useState(false);
 
   const getClerkErrorMessage = (err: any) => {
     if (err?.errors && err.errors.length > 0) {
@@ -67,14 +69,34 @@ export default function Profile() {
         </TouchableOpacity>
 
         <TouchableOpacity
+          onPress={() => setResetPasswordModalVisible(true)}
+          className="bg-[#018ADB] py-3 rounded-2xl items-center mt-2"
+        >
+          <Text className="text-white font-semibold text-lg font-monda">
+            Reset Password
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => setAnalyticsModalVisible(true)}
+          className="bg-[#018ADB] py-3 rounded-2xl items-center mt-2"
+        >
+          <Text className="text-white font-semibold text-lg font-monda">
+            Analytics
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
           onPress={() => setLogoutModalVisible(true)}
-          className="bg-[#DC3545] py-3 rounded-2xl items-center mt-4"
+          className="bg-[#DC3545] py-3 rounded-2xl items-center mt-2"
         >
           <Text className="text-white font-semibold text-lg font-monda">Logout</Text>
         </TouchableOpacity>
       </View>
 
       <TransactionModal visible={txModalVisible} onClose={() => setTxModalVisible(false)} />
+      <ResetPasswordModal visible={resetPasswordModalVisible} onClose={() => setResetPasswordModalVisible(false)} />
+      <AnalyticsModal visible={analyticsModalVisible} onClose={() => setAnalyticsModalVisible(false)} />
       <LogoutModal visible={logoutModalVisible} onClose={() => setLogoutModalVisible(false)} handleLogout={handleLogout} />
     </View>
   );

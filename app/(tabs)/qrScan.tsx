@@ -1,52 +1,84 @@
 import { useCameraPermissions, CameraView } from "expo-camera";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { Alert, Button, View } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 const QRScan = () => {
   const [permission, requestPermission] = useCameraPermissions();
-  const [scanned, setScanned] = useState(false);
   const [cameraActive, setCameraActive] = useState(false);
+  const [receiptIdToCheck, setReceiptIdToCheck] = useState<string | null>(null);
+  const [scanned, setScanned] = useState(false);
   const router = useRouter();
+  const hasScannedRef = useRef(false);
 
-  // Request permission on mount if not granted
+  const duplicateReceipt = useQuery(
+    api.UserReceipts.getByOrNumber,
+    receiptIdToCheck ? { ORnumber: receiptIdToCheck } : "skip"
+  );
+
+  // Request permission on mount
   useEffect(() => {
-    (async () => {
-      if (!permission?.granted) {
-        await requestPermission();
-      }
-    })();
+    if (!permission?.granted) {
+      requestPermission();
+    }
   }, [permission]);
 
-  // Use useFocusEffect to manage camera lifecycle
+  // Reset camera when screen focuses
   useFocusEffect(
     useCallback(() => {
       setCameraActive(true);
-      setScanned(false); // reset scan state when screen focused
-
-      return () => {
-        setCameraActive(false);
-      };
+      setScanned(false);
+      setReceiptIdToCheck(null);
+      hasScannedRef.current = false;
+      return () => setCameraActive(false);
     }, [])
   );
 
-  const handleQRCodeScanned = ({ data }: { data: string }) => {
+  // Runs when a receiptId is set
+  useEffect(() => {
+    if (!receiptIdToCheck || hasScannedRef.current) return;
+
+    if (duplicateReceipt === undefined) return;
+    if (duplicateReceipt !== null) {
+      Alert.alert("❌ Error", "Receipt already exists.");
+      hasScannedRef.current = false;
+      setTimeout(() => {
+        setReceiptIdToCheck(null);
+        setCameraActive(true);
+      }, 1500);
+      return;
+    }
+
+    hasScannedRef.current = true;
+    setScanned(true);
+    router.push({
+      pathname: "/ReceiptPreview",
+      params: { receiptId: receiptIdToCheck },
+    });
+  }, [receiptIdToCheck, duplicateReceipt]);
+
+  const handleQRCodeScanned = async ({ data }: { data: string }) => {
+    if (hasScannedRef.current) return;
+
     try {
-      const parsedData = JSON.parse(data);
-      if (!parsedData.receiptId) throw new Error("Missing receiptId");
-      setScanned(true);
-      router.push({
-        pathname: "/ReceiptPreview",
-        params: { receiptId: parsedData.receiptId },
-      });
-    } catch (error) {
-      Alert.alert("❌ Error", "Invalid QR code data.");
+      const parsed = JSON.parse(data);
+      if (!parsed.receiptId) throw new Error("Missing receiptId");
+
+      setCameraActive(false);
+      setReceiptIdToCheck(parsed.receiptId);
+    } catch (e) {
+      Alert.alert("❌ Error", "Invalid QR code.");
+      setTimeout(() => {
+        hasScannedRef.current = false;
+        setCameraActive(true);
+      }, 1000);
     }
   };
 
   if (!permission) return <View />;
-
   if (!permission.granted) {
     return (
       <View className="flex-1 justify-center items-center">
@@ -56,7 +88,7 @@ const QRScan = () => {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: "#004581" }}>
       {cameraActive && (
         <CameraView
           barcodeScannerSettings={{ barcodeTypes: ["qr"] }}
