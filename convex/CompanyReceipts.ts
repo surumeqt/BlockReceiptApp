@@ -20,8 +20,12 @@ export const saveReceipt = mutation({
     ORnumber: v.string(),
     companyAddress: v.string(),
     date: v.string(),
-    amount: v.number(),
-    category: v.string(),
+    clientName: v.string(),
+    clientAddress: v.optional(v.string()),
+    serviceType: v.string(),
+    serviceName: v.string(),
+    serviceDetails: v.optional(v.string()),
+    price: v.number(),
   },
   handler: async (ctx, args) => {
     await ctx.db.insert('CompanyReceipts', {
@@ -31,8 +35,19 @@ export const saveReceipt = mutation({
       ORnumber: args.ORnumber,
       companyAddress: args.companyAddress,
       date: args.date,
-      amount: args.amount,
-      category: args.category,
+      clientName: args.clientName,
+      clientAddress: args.clientAddress,
+      serviceName: args.serviceName,
+      serviceDetails: args.serviceDetails,
+      serviceType: args.serviceType,
+      price: args.price,
     });
+  },
+});
+
+export const listReceipts = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db.query("CompanyReceipts").collect();
   },
 });

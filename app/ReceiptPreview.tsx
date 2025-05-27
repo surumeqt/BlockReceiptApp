@@ -60,21 +60,21 @@ const ReceiptPreview = () => {
         return;
       }
 
-      const txReceipt = await registerReceiptOnChain(formattedHash, numericId);
+      // const txReceipt = await registerReceiptOnChain(formattedHash, numericId);
 
       await uploadImage({
         base64,
         owner: userId,
         OrNumber: receiptId,
-        txHash: txReceipt.hash,
+        txHash: formattedHash,
         company: receipt?.company ?? "",
-        amount: receipt?.amount ?? 0,
-        category: receipt?.category ?? "",  
+        amount: receipt?.price ?? 0,
+        category: receipt?.serviceType ?? "",  
       });
 
       Alert.alert(
         "✅ Receipt Saved & Registered!",
-        `Transaction Hash: ${txReceipt.hash}`,
+        `Transaction Hash: ${formattedHash}`,
         [
           {
             text: "OK",
