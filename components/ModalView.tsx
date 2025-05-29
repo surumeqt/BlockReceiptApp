@@ -1,10 +1,10 @@
+import { ActivityIndicator, Alert, Image, Modal, Text, TextInput, TouchableOpacity, View, ScrollView } from "react-native";
+import React, { useEffect, useState } from "react";
+import CustomDropdown from "./CustomDropdown";
 import { api } from "@/convex/_generated/api";
 import { useUser } from "@clerk/clerk-expo";
 import { useQuery } from "convex/react";
 import { ethers } from "ethers";
-import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Image, Modal, Text, TextInput, TouchableOpacity, View, Alert} from "react-native";
-
 
 const provider = new ethers.JsonRpcProvider("https://sepolia.infura.io/v3/0f2b412917604f378b52068c34bb9f4d");
 
@@ -327,5 +327,76 @@ const ResetPasswordModal = ({ visible, onClose }: { visible: boolean; onClose: (
   );
 };
 
-export { AnalyticsModal, ImageModal, LogoutModal, ResetPasswordModal, TransactionModal };
+const DateFilterModal = ({ visible, onClose, onApplyFilter, initialSelectedDate, availableDates } : { 
+  visible: boolean; 
+  onClose: () => void;
+  onApplyFilter: (selectedDate: string | null) => void;
+  initialSelectedDate: string | null; 
+  availableDates: string[];
+}) => {
+  const [selectedDate, setSelectedDate] = useState<string | null>(initialSelectedDate);
 
+  const applyFilter = () => {
+    onApplyFilter(selectedDate);
+    onClose();
+  };
+
+  const clearFilter = () => {
+    setSelectedDate(null);
+    onApplyFilter(null);
+    onClose();
+  };
+
+  return (
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+      <View className="flex-1 justify-center items-center"
+      style={{ backgroundColor: 'rgba(0,0,0,0.8)' }}
+      >
+        <View className="w-80 max-h-[80%] bg-white p-6 rounded-2xl shadow-lg">
+          <ScrollView>
+            <Text className="text-2xl font-bold text-[#333333] text-center mb-5">
+              Filter by Date
+            </Text>
+
+            {availableDates.length > 0 ? (
+              <CustomDropdown
+                label="Select a Date:"
+                options={availableDates}
+                selectedValue={selectedDate}
+                onValueChange={setSelectedDate}
+                placeholder="-- Select Date --"
+              />
+            ) : (
+              <Text className="text-base text-gray-500 text-center mb-5">No dates available to filter.</Text>
+            )}
+
+            <TouchableOpacity
+              onPress={applyFilter}
+              className="py-3 px-4 rounded-2xl mb-2 bg-[#018ADB]"
+            >
+              <Text className="text-white font-semibold text-lg text-center">Apply Filter</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={clearFilter}
+              className="py-3 px-4 rounded-2xl mb-2"
+              style={{backgroundColor: '#FFC107'}}
+            >
+              <Text className="text-white font-semibold text-lg text-center">Clear Filter</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={onClose}
+              className="py-3 px-4 rounded-2xl"
+              style={{ backgroundColor: '#ff0000' }}
+            >
+              <Text className="text-white font-semibold text-lg text-center">Close</Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </View>
+      </View>
+    </Modal>
+  );
+};
+
+export { AnalyticsModal, DateFilterModal, ImageModal, LogoutModal, ResetPasswordModal, TransactionModal };

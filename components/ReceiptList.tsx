@@ -1,20 +1,83 @@
-import { View, Text, FlatList, Image, TouchableOpacity, Alert, ScrollView } from "react-native";
-import React, { useState } from "react";
-import { useQuery } from "convex/react";
+import { DateFilterModal, ImageModal } from "@/components/ModalView";
 import { api } from "@/convex/_generated/api";
-import * as Clipboard from "expo-clipboard";
-import { ImageModal } from "@/components/ModalView";
 import AntDesign from '@expo/vector-icons/AntDesign';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { useQuery } from "convex/react";
+import * as Clipboard from "expo-clipboard";
+import React, { useState, useEffect } from "react";
+import { Alert, FlatList, Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 const ReceiptList = ({ userId }: { userId: string }) => {
-  const receipts = useQuery(api.UserReceipts.getByUser, { owner: userId });
+  const [selectedFilterDate, setSelectedFilterDate] = useState<string | null>(null);
+  const uniqueDates = useQuery(api.UserReceipts.getUniqueReceiptDatesByUser, { owner: userId });
+
+  const queryArgs =
+    selectedFilterDate !== null
+      ? { owner: userId, selectedDate: selectedFilterDate }
+      : { owner: userId };
+
+  const queryFunction =
+    selectedFilterDate !== null
+      ? api.UserReceipts.getByUserAndSingleDay
+      : api.UserReceipts.getByUser;
+
+  const receipts = useQuery(
+    queryFunction,
+    queryArgs
+  );
+
   const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
   const [imageModalVisible, setImageModalVisible] = useState(false);
+  const [dateFilterModalVisible, setDateFilterModalVisible] = useState(false);
   const [selectedImageUrl, setSelectedImageUrl] = useState<string | null>(null);
 
-  if (receipts === undefined) {
-    console.log("⌛ [ReceiptList] Still loading receipts...");
+  useEffect(() => {
+    if (selectedCompany === null) {
+      setSelectedFilterDate(null);
+    }
+  }, [selectedCompany]);
+
+  if (receipts === undefined || uniqueDates === undefined) {
+    console.log("⌛ [ReceiptList] Still loading data...");
     return <Text className="text-white">Loading...</Text>;
+  }
+
+  if (receipts.length === 0 && selectedFilterDate !== null) {
+    return (
+      <View className="mt-1 flex-1">
+        <Text className="text-2xl font-bold text-[#DDE8F0]">{selectedCompany || "Receipts"}</Text>
+        <View className="flex-row items-center justify-between mt-4">
+          <TouchableOpacity
+            onPress={() => setSelectedCompany(null)}
+            className="p-2 flex-row items-center gap-2"
+          >
+            <AntDesign name="leftcircle" size={24} color="white" />
+            <Text className="text-white text-lg">Back</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => setDateFilterModalVisible(true)}
+            className="p-2 flex-row items-center gap-2"
+          >
+            <FontAwesome name="filter" size={24} color="white" />
+            <Text className="text-white text-lg">filter</Text>
+          </TouchableOpacity>
+        </View>
+        <Text className="text-white text-center mt-8 text-lg">
+          No receipts found for {selectedFilterDate}.
+        </Text>
+        <DateFilterModal
+          visible={dateFilterModalVisible}
+          onClose={() => setDateFilterModalVisible(false)}
+          onApplyFilter={(dateString) => {
+            setSelectedFilterDate(dateString);
+            setDateFilterModalVisible(false);
+          }}
+          initialSelectedDate={selectedFilterDate}
+          availableDates={uniqueDates}
+        />
+      </View>
+    );
   }
 
   if (receipts.length === 0) {
@@ -30,23 +93,72 @@ const ReceiptList = ({ userId }: { userId: string }) => {
   });
 
   if (selectedCompany !== null) {
+    if (!groupedReceipts[selectedCompany] || groupedReceipts[selectedCompany].length === 0) {
+      return (
+        <View className="mt-1 flex-1">
+          <Text className="text-2xl font-bold text-[#DDE8F0]">{selectedCompany}</Text>
+          <View className="flex-row items-center justify-between mt-4">
+            <TouchableOpacity
+              onPress={() => setSelectedCompany(null)}
+              className="p-2 flex-row items-center gap-2"
+            >
+              <AntDesign name="leftcircle" size={24} color="white" />
+              <Text className="text-white text-lg">Back</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => setDateFilterModalVisible(true)}
+              className="p-2 flex-row items-center gap-2"
+            >
+              <FontAwesome name="filter" size={24} color="white" />
+              <Text className="text-white text-lg">filter</Text>
+            </TouchableOpacity>
+          </View>
+          <Text className="text-white text-center mt-8 text-lg">
+            No receipts found for "{selectedCompany}" for {selectedFilterDate || 'the selected date'}.
+          </Text>
+          <DateFilterModal
+            visible={dateFilterModalVisible}
+            onClose={() => setDateFilterModalVisible(false)}
+            onApplyFilter={(dateString) => {
+              setSelectedFilterDate(dateString);
+              setDateFilterModalVisible(false);
+            }}
+            initialSelectedDate={selectedFilterDate}
+            availableDates={uniqueDates}
+          />
+        </View>
+      );
+    }
+
     return (
       <View className="mt-1 flex-1">
         <Text className="text-2xl font-bold text-[#DDE8F0]">{selectedCompany}</Text>
-        <TouchableOpacity
-          onPress={() => setSelectedCompany(null)}
-          className="p-2 mb-1 mt-4 flex-row items-center gap-2"
-        >
-        <AntDesign name="leftcircle" size={24} color="white" />
-        <Text className="text-white text-lg">Back</Text>
-        </TouchableOpacity>
+
+        <View className="flex-row items-center justify-between mt-4">
+          <TouchableOpacity
+            onPress={() => setSelectedCompany(null)}
+            className="p-2 flex-row items-center gap-2"
+          >
+            <AntDesign name="leftcircle" size={24} color="white" />
+            <Text className="text-white text-lg">Back</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => setDateFilterModalVisible(true)}
+            className="p-2 flex-row items-center gap-2"
+          >
+            <FontAwesome name="filter" size={24} color="white" />
+            <Text className="text-white text-lg">filter</Text>
+          </TouchableOpacity>
+        </View>
 
         <FlatList
           data={groupedReceipts[selectedCompany]}
           numColumns={2}
           keyExtractor={(item) => item._id}
           renderItem={({ item }) => (
-            <View className="p-2 rounded-lg items-center"
+            <View className="p-2 rounded-lg items-center mt-4"
             style={{ width: 160, height: 210}}
             >
               {item.imageUrl ? (
@@ -94,6 +206,16 @@ const ReceiptList = ({ userId }: { userId: string }) => {
           visible={imageModalVisible}
           onClose={() => setImageModalVisible(false)}
           imageUrl={selectedImageUrl}
+        />
+        <DateFilterModal
+          visible={dateFilterModalVisible}
+          onClose={() => setDateFilterModalVisible(false)}
+          onApplyFilter={(dateString) => {
+            setSelectedFilterDate(dateString);
+            setDateFilterModalVisible(false);
+          }}
+          initialSelectedDate={selectedFilterDate}
+          availableDates={uniqueDates}
         />
       </View>
     );

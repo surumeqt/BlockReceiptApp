@@ -13,6 +13,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useSignIn } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
+import { getClerkErrorMessage } from "@/utils/clerkErrors";
 
 export default function Login() {
   const { signIn, setActive, isLoaded } = useSignIn();
@@ -21,15 +22,6 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
-  const getClerkErrorMessage = (err: any) => {
-    if (err?.errors && err.errors.length > 0) {
-      const { message, meta } = err.errors[0];
-      const field = meta?.paramName ? meta.paramName.replace(/_/g, ' ') : null;
-      return field ? `${field.charAt(0).toUpperCase() + field.slice(1)} ${message}` : message;
-    }
-    return "Something went wrong. Please try again.";
-  };
 
   const onSignInPress = async () => {
     if (!isLoaded || loading) return;

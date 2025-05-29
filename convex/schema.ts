@@ -16,12 +16,13 @@ export default defineSchema({
         company: v.string(),
         OrNumber: v.string(),
         txHash: v.string(),
-        timestamp: v.float64(),
+        timestamp: v.number(),
         amount: v.number(),
         category: v.string(),
       })
       .index("by_owner", ["owner"])
-      .index("by_userOr", ["OrNumber"]),
+      .index("by_userOr", ["OrNumber"])
+      .index("by_owner_and_timestamp", ["owner", "timestamp"]),
 
     CompanyReceipts: defineTable({
       receiptUrl: v.string(),

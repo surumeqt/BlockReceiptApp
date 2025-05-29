@@ -13,6 +13,7 @@ import {
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useSignUp } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
+import { getClerkErrorMessage } from "@/utils/clerkErrors";
 
 export default function SignUp() {
   const { isLoaded, signUp, setActive } = useSignUp();
@@ -129,11 +130,11 @@ export default function SignUp() {
           </View>
         ) : (
           <View className="w-80 p-6 bg-white rounded-2xl shadow-md">
-            <Text className="text-1xl font-light mb-4 text-center font-monda">
+            <Text className="text-xl font-bold text-center font-monda">
               Don't have an Account ?
             </Text>
-            <Text className="text-2xl font-bold mb-4 text-center font-monda">
-              sign-up
+            <Text className="text-lg font-semibold mb-4 text-center font-monda">
+              Sign-up
             </Text>
             <TextInput
               className="border border-gray-300 rounded-md p-3 mb-2 font-monda"
