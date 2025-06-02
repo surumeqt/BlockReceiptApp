@@ -1,5 +1,6 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
+import { Doc } from './_generated/dataModel';
 
 export const getByReceiptId = query({
   args: { receiptId: v.string() },
@@ -49,5 +50,36 @@ export const listReceipts = query({
   args: {},
   handler: async (ctx) => {
     return await ctx.db.query("CompanyReceipts").collect();
+  },
+});
+
+export const listReceiptsByDateRange = query({
+  args: {
+    startDate: v.optional(v.string()),
+    endDate: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const allReceipts = await ctx.db.query("CompanyReceipts").collect();
+
+    let filteredReceipts: Doc<"CompanyReceipts">[] = allReceipts;
+
+    const filterStartDate = args.startDate ? new Date(args.startDate) : null;
+    const filterEndDate = args.endDate ? new Date(args.endDate) : null;
+    if (filterEndDate) {
+      filterEndDate.setHours(23, 59, 59, 999);
+    }
+
+    if (filterStartDate || filterEndDate) {
+      filteredReceipts = allReceipts.filter(receipt => {
+        const receiptDate = new Date(receipt.date);
+
+        const isAfterStartDate = filterStartDate ? receiptDate >= filterStartDate : true;
+        const isBeforeEndDate = filterEndDate ? receiptDate <= filterEndDate : true;
+
+        return isAfterStartDate && isBeforeEndDate;
+      });
+    }
+
+    return filteredReceipts;
   },
 });

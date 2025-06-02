@@ -112,7 +112,6 @@ export const getUniqueReceiptDatesByUser = query({
   },
 });
 
-
 export const getByUserAndSingleDay = query({
   args: {
     owner: v.string(),
